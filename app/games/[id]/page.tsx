@@ -22,7 +22,7 @@ export default function GameDetailPage({ params }: Props) {
         ← Back to games
       </Link>
 
-      <div className="mt-6 rounded-2xl border border-white/10 bg-panel p-6">
+      <div className="mt-6 rounded-2xl border border-white/10 bg-panel p-5 sm:p-6">
         <p className="text-sm text-muted">{game.league}</p>
         <h1 className="mt-2 text-3xl font-bold">{game.homeTeam} vs {game.awayTeam}</h1>
         <p className="mt-2 text-sm text-muted">

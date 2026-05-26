@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -10,7 +11,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+        <div className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-30 mb-8 rounded-2xl border border-white/10 bg-background/85 px-4 py-3 backdrop-blur">
+            <nav className="flex items-center justify-between gap-4">
+              <Link href="/" className="inline-flex items-center gap-2 font-semibold tracking-wide text-text hover:text-accent">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-sm text-accent">🏀</span>
+                <span>BasketLog Europe</span>
+              </Link>
+              <Link href="/games" className="rounded-lg border border-white/15 px-3 py-2 text-sm text-muted transition hover:border-accent/70 hover:text-accent">
+                Games
+              </Link>
+            </nav>
+          </header>
+          <main>{children}</main>
+        </div>
       </body>
     </html>
   );

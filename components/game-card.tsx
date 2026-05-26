@@ -6,24 +6,41 @@ type Props = {
 };
 
 export function GameCard({ game }: Props) {
+  const gameDate = new Date(game.date);
+
   return (
     <Link
       href={`/games/${game.id}`}
-      className="block rounded-2xl border border-white/10 bg-panel p-5 transition hover:border-accent/80 hover:shadow-lg hover:shadow-accent/10"
+      className="group block overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-panel via-panel to-black/70 p-5 transition hover:-translate-y-0.5 hover:border-accent/70 hover:shadow-xl hover:shadow-accent/10"
     >
-      <p className="text-sm text-muted">{game.league}</p>
-      <h3 className="mt-2 text-lg font-semibold">
-        {game.homeTeam} vs {game.awayTeam}
-      </h3>
-      <p className="mt-1 text-sm text-muted">{new Date(game.date).toLocaleDateString()} · {game.venue}</p>
-      <div className="mt-4 flex items-center justify-between">
-        <p className="text-sm text-muted">
-          Score: <span className="text-text">{game.score.home}-{game.score.away}</span>
-        </p>
-        <p className="rounded-full bg-accent/15 px-3 py-1 text-xs font-medium text-accent">
-          ★ {game.reviewSummary.averageRating.toFixed(1)} ({game.reviewSummary.totalReviews})
+      <div className="flex items-start justify-between gap-3">
+        <p className="rounded-full border border-white/10 bg-black/25 px-3 py-1 text-xs uppercase tracking-wide text-muted">{game.league}</p>
+        <p className="text-right text-xs text-muted">
+          {gameDate.toLocaleDateString(undefined, {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })}
         </p>
       </div>
+
+      <h3 className="mt-4 text-xl font-semibold leading-snug transition group-hover:text-accent">
+        {game.homeTeam} <span className="text-muted">vs</span> {game.awayTeam}
+      </h3>
+      <p className="mt-2 text-sm text-muted">{game.venue}</p>
+
+      <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-black/25 p-3">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted">Final score</p>
+          <p className="mt-1 text-lg font-bold text-text">{game.score.home}-{game.score.away}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-wide text-muted">Fan rating</p>
+          <p className="mt-1 text-lg font-semibold text-accent">★ {game.reviewSummary.averageRating.toFixed(1)}</p>
+        </div>
+      </div>
+
+      <p className="mt-4 text-xs text-muted">{game.reviewSummary.totalReviews} reviews logged • Tap to view details</p>
     </Link>
   );
 }
