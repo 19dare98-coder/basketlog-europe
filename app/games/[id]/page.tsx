@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sampleGames } from "@/data/games";
+import { GameReviewCard } from "./game-review-card";
 
 type Props = {
   params: {
@@ -44,6 +45,8 @@ export default function GameDetailPage({ params }: Props) {
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Review notes</h2>
           <p className="mt-2 text-sm text-text/90">{game.notes}</p>
         </div>
+
+        <GameReviewCard gameLabel={`${game.homeTeam} vs ${game.awayTeam}`} />
       </div>
     </section>
   );
