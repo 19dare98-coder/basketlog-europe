@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 import { getTeamInitials } from "@/lib/team-initials";
 
 type FeaturedGame = {
@@ -7,7 +8,7 @@ type FeaturedGame = {
   homeTeam: string;
   awayTeam: string;
   tipoffOrScore: string;
-  status: "Scheduled" | "Live" | "Finished";
+  status: string;
   averageRating?: number;
   reactions: number;
 };
@@ -21,46 +22,52 @@ type Review = {
   timestamp: string;
 };
 
-const featuredGames: FeaturedGame[] = [
-  {
-    id: "el-1",
-    league: "EuroLeague",
-    homeTeam: "Real Madrid",
-    awayTeam: "Fenerbahçe",
-    tipoffOrScore: "84 - 79",
-    status: "Finished",
-    averageRating: 4.6,
-    reactions: 312
-  },
-  {
-    id: "ec-1",
-    league: "EuroCup",
-    homeTeam: "Paris Basketball",
-    awayTeam: "Joventut",
-    tipoffOrScore: "21:00 CET",
-    status: "Scheduled",
-    reactions: 118
-  },
-  {
-    id: "bcl-1",
-    league: "Basketball Champions League",
-    homeTeam: "Unicaja",
-    awayTeam: "Galatasaray",
-    tipoffOrScore: "Q3 06:41 · 58 - 55",
-    status: "Live",
-    reactions: 207
-  },
-  {
-    id: "aba-1",
-    league: "ABA League",
-    homeTeam: "Partizan",
-    awayTeam: "Crvena zvezda",
-    tipoffOrScore: "90 - 88",
-    status: "Finished",
-    averageRating: 4.3,
-    reactions: 264
+async function getFeaturedGames(): Promise<FeaturedGame[]> {
+  const gamesSelect = `
+    id,
+    home_score,
+    away_score,
+    game_date,
+    status,
+    league:leagues(name),
+    home_team:teams!games_home_team_id_fkey(name),
+    away_team:teams!games_away_team_id_fkey(name)
+  `;
+
+  const { data, error } = supabase
+    ? await supabase.from("games").select(gamesSelect).order("game_date", { ascending: false }).limit(4)
+    : { data: null, error: new Error("Supabase is not configured. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.") };
+
+  if (error) {
+    console.error("Failed to load featured games from Supabase", {
+      message: error.message,
+      details: (error as { details?: string }).details,
+      hint: (error as { hint?: string }).hint,
+      code: (error as { code?: string }).code,
+    });
+
+    return [];
   }
-];
+
+  return (data ?? []).map((item: any) => {
+    const homeTeam = Array.isArray(item.home_team) ? item.home_team[0] : item.home_team;
+    const awayTeam = Array.isArray(item.away_team) ? item.away_team[0] : item.away_team;
+    const hasScore = item.home_score !== null && item.away_score !== null;
+
+    return {
+      id: item.id,
+      league: item.league?.name ?? "League",
+      homeTeam: homeTeam?.name ?? "Home Team",
+      awayTeam: awayTeam?.name ?? "Away Team",
+      tipoffOrScore: hasScore
+        ? `${item.home_score} - ${item.away_score}`
+        : new Date(item.game_date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      status: item.status ?? "Scheduled",
+      averageRating: undefined,
+      reactions: 0,
+    };
+  });
+}
 
 const latestReviews: Review[] = [
   {
@@ -95,7 +102,8 @@ const trendingGames = [
   { label: "Most discussed", game: "Unicaja vs Galatasaray", value: "540 reactions" }
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featuredGames = await getFeaturedGames();
   return (
     <div className="space-y-8 pb-8">
       <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-6 sm:p-8">
@@ -124,8 +132,9 @@ export default function HomePage() {
           <h2 className="text-xl font-semibold sm:text-2xl">Tonight in European Basketball</h2>
           <span className="text-xs uppercase tracking-wider text-muted">Updated just now</span>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {featuredGames.map((game) => (
+        {featuredGames.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {featuredGames.map((game) => (
             <article
               key={game.id}
               className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.03] to-transparent p-4"
@@ -172,13 +181,18 @@ export default function HomePage() {
               </div>
 
               <div className="mt-3 flex justify-end">
-                <Link href="/games" className="text-xs font-medium text-accent transition hover:text-accent/80">
+                <Link href={`/games/${game.id}`} className="text-xs font-medium text-accent transition hover:text-accent/80">
                   Review game →
                 </Link>
               </div>
             </article>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-white/20 bg-panel/60 p-6 text-sm text-muted">
+            Featured games are unavailable right now. Visit the <Link href="/games" className="text-accent hover:text-accent/80">games list</Link>.
+          </div>
+        )}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[1.7fr_1fr]">
