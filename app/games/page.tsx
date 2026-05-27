@@ -36,12 +36,31 @@ function asGame(item: any): Game {
 }
 
 export default async function GamesPage() {
-  const { data, error } = supabase ? await supabase
-    .from("games")
-    .select(
-      "id, venue, game_date, home_score, away_score, status, round, league:leagues(name), home_team:teams!games_home_team_id_fkey(name, short_name), away_team:teams!games_away_team_id_fkey(name, short_name)"
-    )
-    .order("game_date", { ascending: false }) : { data: null, error: new Error("Supabase is not configured.") };
+  const gamesSelect = `
+    id,
+    home_score,
+    away_score,
+    game_date,
+    status,
+    venue,
+    round,
+    league:leagues(name),
+    home_team:teams!games_home_team_id_fkey(name, short_name),
+    away_team:teams!games_away_team_id_fkey(name, short_name)
+  `;
+
+  const { data, error } = supabase
+    ? await supabase.from("games").select(gamesSelect).order("game_date", { ascending: false })
+    : { data: null, error: new Error("Supabase is not configured. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.") };
+
+  if (error) {
+    console.error("Failed to load games from Supabase", {
+      message: error.message,
+      details: (error as { details?: string }).details,
+      hint: (error as { hint?: string }).hint,
+      code: (error as { code?: string }).code,
+    });
+  }
 
   const games = (data ?? []).map(asGame);
 
