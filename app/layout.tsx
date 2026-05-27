@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { BackToTopButton } from "@/components/back-to-top";
 
 export const metadata: Metadata = {
   title: "BasketLog Europe",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </nav>
           </header>
           <main>{children}</main>
+          <BackToTopButton />
         </div>
       </body>
     </html>

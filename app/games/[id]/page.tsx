@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sampleGames } from "@/data/games";
 import { GameReviewCard } from "./game-review-card";
+import { BackButton } from "@/components/back-button";
 
 type Props = {
   params: {
@@ -18,9 +18,7 @@ export default function GameDetailPage({ params }: Props) {
 
   return (
     <section>
-      <Link href="/games" className="text-sm text-accent hover:underline">
-        ← Back to games
-      </Link>
+      <BackButton fallbackHref="/games" label="Back to games" />
 
       <div className="mt-6 rounded-2xl border border-white/10 bg-panel p-5 sm:p-6">
         <p className="text-sm text-muted">{game.league}</p>
