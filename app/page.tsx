@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTeamInitials } from "@/lib/team-initials";
 
 type FeaturedGame = {
   id: string;
@@ -10,28 +11,6 @@ type FeaturedGame = {
   averageRating?: number;
   reactions: number;
 };
-
-const teamInitials: Record<string, string> = {
-  "Real Madrid": "RMA",
-  "Fenerbahçe": "FEN",
-  Partizan: "PAR",
-  "Crvena zvezda": "CZV",
-  Barcelona: "BAR",
-  Olympiacos: "OLY",
-  Panathinaikos: "PAN",
-  "Anadolu Efes": "EFS",
-  "Valencia Basket": "VAL",
-  "Paris Basketball": "PARIS",
-  Joventut: "JOV",
-  Unicaja: "UNI",
-  Galatasaray: "GAL",
-  Zenit: "ZEN",
-  CSKA: "CSK"
-};
-
-function getTeamInitials(teamName: string) {
-  return teamInitials[teamName] ?? teamName.slice(0, 3).toUpperCase();
-}
 
 type Review = {
   id: string;
@@ -72,10 +51,10 @@ const featuredGames: FeaturedGame[] = [
     reactions: 207
   },
   {
-    id: "vtb-1",
-    league: "VTB League",
-    homeTeam: "Zenit",
-    awayTeam: "CSKA",
+    id: "aba-1",
+    league: "ABA League",
+    homeTeam: "Partizan",
+    awayTeam: "Crvena zvezda",
     tipoffOrScore: "90 - 88",
     status: "Finished",
     averageRating: 4.3,
@@ -103,7 +82,7 @@ const latestReviews: Review[] = [
   {
     id: "r-3",
     username: "@ballnerd_21",
-    gameName: "Zenit vs CSKA",
+    gameName: "Partizan vs Crvena zvezda",
     rating: 4.5,
     text: "A proper rivalry game — physical, tactical, and clutch shots.",
     timestamp: "32m ago"
@@ -154,12 +133,12 @@ export default function HomePage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-muted">{game.league}</p>
                 <span
-                  className={`rounded-full px-2 py-1 text-xs font-medium ${
+                  className={`rounded-full px-2 py-1 text-xs font-semibold ${
                     game.status === "Live"
-                      ? "bg-red-500/20 text-red-300"
+                      ? "border border-red-400/40 bg-red-500/25 text-red-200"
                       : game.status === "Finished"
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "bg-white/10 text-muted"
+                        ? "border border-emerald-400/40 bg-emerald-500/25 text-emerald-200"
+                        : "border border-sky-400/30 bg-sky-500/20 text-sky-100"
                   }`}
                 >
                   {game.status}
@@ -185,11 +164,17 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <p className="mt-4 text-center text-lg font-semibold text-accent">{game.tipoffOrScore}</p>
+              <p className="mt-4 text-center text-2xl font-extrabold tracking-wide text-accent">{game.tipoffOrScore}</p>
 
               <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs text-muted">
                 <span>{game.status === "Finished" ? `Avg ${game.averageRating?.toFixed(1) ?? "-"}` : "Avg rating pending"}</span>
                 <span>{game.reactions} reactions</span>
+              </div>
+
+              <div className="mt-3 flex justify-end">
+                <Link href="/games" className="text-xs font-medium text-accent transition hover:text-accent/80">
+                  Review game →
+                </Link>
               </div>
             </article>
           ))}
@@ -213,7 +198,8 @@ export default function HomePage() {
                 </p>
                 <div className="mt-4 flex gap-4 text-xs text-muted">
                   <button className="transition hover:text-accent">Like</button>
-                  <button className="transition hover:text-accent">Reply</button>
+                  <button className="transition hover:text-accent">Comment</button>
+                  <Link href="/games" className="transition hover:text-accent">View game</Link>
                 </div>
               </article>
             ))}
