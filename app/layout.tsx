@@ -18,9 +18,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-sm text-accent">🏀</span>
                 <span>BasketLog Europe</span>
               </Link>
+              <div className="flex items-center gap-2">
               <Link href="/games" className="rounded-lg border border-white/15 px-3 py-2 text-sm text-muted transition hover:border-accent/70 hover:text-accent">
                 Games
               </Link>
+              <Link href="#" className="rounded-lg border border-white/15 px-3 py-2 text-sm text-muted transition hover:border-accent/70 hover:text-accent">
+                Sign in
+              </Link>
+              </div>
             </nav>
           </header>
           <main>{children}</main>
