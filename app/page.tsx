@@ -11,6 +11,28 @@ type FeaturedGame = {
   reactions: number;
 };
 
+const teamInitials: Record<string, string> = {
+  "Real Madrid": "RMA",
+  "Fenerbahçe": "FEN",
+  Partizan: "PAR",
+  "Crvena zvezda": "CZV",
+  Barcelona: "BAR",
+  Olympiacos: "OLY",
+  Panathinaikos: "PAN",
+  "Anadolu Efes": "EFS",
+  "Valencia Basket": "VAL",
+  "Paris Basketball": "PARIS",
+  Joventut: "JOV",
+  Unicaja: "UNI",
+  Galatasaray: "GAL",
+  Zenit: "ZEN",
+  CSKA: "CSK"
+};
+
+function getTeamInitials(teamName: string) {
+  return teamInitials[teamName] ?? teamName.slice(0, 3).toUpperCase();
+}
+
 type Review = {
   id: string;
   username: string;
@@ -101,9 +123,12 @@ export default function HomePage() {
         <p className="mb-3 inline-flex rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
           Live basketball hub
         </p>
-        <h1 className="max-w-2xl text-3xl font-bold leading-tight sm:text-4xl">Your basketball diary for European hoops.</h1>
+        <h1 className="max-w-3xl text-3xl font-bold leading-tight sm:text-4xl">
+          Track every classic. Rate every rivalry. Build your European basketball diary.
+        </h1>
         <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base">
-          Track games, rate performances, and see what fans think after every matchup.
+          From EuroLeague nights to domestic league battles — log the games you watch, share your take, and see what the basketball
+          community thinks.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/games" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:opacity-90">
@@ -122,9 +147,12 @@ export default function HomePage() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {featuredGames.map((game) => (
-            <article key={game.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-xs uppercase tracking-wider text-muted">{game.league}</p>
+            <article
+              key={game.id}
+              className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.03] to-transparent p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs uppercase tracking-[0.16em] text-muted">{game.league}</p>
                 <span
                   className={`rounded-full px-2 py-1 text-xs font-medium ${
                     game.status === "Live"
@@ -137,9 +165,28 @@ export default function HomePage() {
                   {game.status}
                 </span>
               </div>
-              <p className="mt-4 text-sm text-muted">{game.awayTeam}</p>
-              <p className="text-lg font-semibold">@ {game.homeTeam}</p>
-              <p className="mt-3 text-base font-semibold text-accent">{game.tipoffOrScore}</p>
+
+              <div className="mt-5">
+                <p className="text-xs uppercase tracking-wide text-muted">Matchup</p>
+                <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-accent/50 bg-gradient-to-b from-accent/25 to-accent/10 text-xs font-extrabold tracking-wider text-accent">
+                      {getTeamInitials(game.awayTeam)}
+                    </div>
+                    <p className="mt-2 text-xs text-muted">{game.awayTeam}</p>
+                  </div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">at</p>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-accent/50 bg-gradient-to-b from-accent/25 to-accent/10 text-xs font-extrabold tracking-wider text-accent">
+                      {getTeamInitials(game.homeTeam)}
+                    </div>
+                    <p className="mt-2 text-xs text-muted">{game.homeTeam}</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-4 text-center text-lg font-semibold text-accent">{game.tipoffOrScore}</p>
+
               <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs text-muted">
                 <span>{game.status === "Finished" ? `Avg ${game.averageRating?.toFixed(1) ?? "-"}` : "Avg rating pending"}</span>
                 <span>{game.reactions} reactions</span>
